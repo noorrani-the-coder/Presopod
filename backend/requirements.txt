@@ -1,0 +1,14 @@
+flask
+flask-cors
+openai
+gtts
+PyPDF2
+pillow
+pytesseract
+cerebras_cloud_sdk
+python-dotenv
+psycopg2-binary
+requests
+PyMuPDF
+python-pptx
+gunicorn

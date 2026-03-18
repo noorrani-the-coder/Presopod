@@ -1,0 +1,16 @@
+.env
+*.log
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+backend/.env
+backend/data/
+backend/__pycache__/
+
+slidecast-ai/slidecast-ai/node_modules/
+slidecast-ai/slidecast-ai/dist/
+
+.DS_Store
+Thumbs.db
