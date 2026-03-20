@@ -5,16 +5,16 @@ import os
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 
-# Blueprints
-from db import init_db
-from routes.auth import auth_bp
-from routes.presentation import presentation_bp
-from routes.upload import upload_bp
-from routes.ask import ask_bp
-from routes.audio import audio_bp
+# ---------------- APP FIRST ----------------
+app = Flask(__name__)
+
+# ✅ HEALTH CHECK (FIRST & SIMPLE)
+@app.route("/")
+def health():
+    return "OK", 200
 
 
-# ---------------- App Setup ----------------
+# ---------------- CORS ----------------
 def _get_allowed_origins():
     raw_origins = os.getenv(
         "CORS_ORIGINS",
@@ -25,20 +25,11 @@ def _get_allowed_origins():
 
 ALLOWED_ORIGINS = _get_allowed_origins()
 
-app = Flask(__name__)
-
 CORS(
     app,
     resources={r"/*": {"origins": ALLOWED_ORIGINS}},
     supports_credentials=True,
 )
-
-# ✅ Safe DB init (no crash)
-try:
-    init_db()
-    print("✅ Database initialized")
-except Exception as e:
-    print("❌ DB ERROR:", e)
 
 
 @app.after_request
@@ -52,7 +43,24 @@ def add_cors_headers(response):
     return response
 
 
-# ---------------- Register Blueprints ----------------
+# ---------------- IMPORT AFTER APP ----------------
+from db import init_db
+from routes.auth import auth_bp
+from routes.presentation import presentation_bp
+from routes.upload import upload_bp
+from routes.ask import ask_bp
+from routes.audio import audio_bp
+
+
+# ---------------- DB INIT ----------------
+try:
+    init_db()
+    print("✅ Database initialized")
+except Exception as e:
+    print("❌ DB ERROR:", e)
+
+
+# ---------------- REGISTER ROUTES ----------------
 app.register_blueprint(auth_bp)
 app.register_blueprint(presentation_bp)
 app.register_blueprint(upload_bp)
@@ -60,13 +68,7 @@ app.register_blueprint(ask_bp)
 app.register_blueprint(audio_bp)
 
 
-# ---------------- ROOT ROUTE ----------------
-@app.route("/")
-def home():
-    return {"status": "Backend running 🚀"}
-
-
-# ---------------- AUDIO STATIC SERVING ----------------
+# ---------------- AUDIO ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "data", "output")
 
@@ -80,10 +82,10 @@ def serve_audio(session_id, filename):
     )
 
 
-# ---------------- Run Server ----------------
+# ---------------- LOCAL RUN ----------------
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(os.getenv("PORT", "5000")),
         debug=os.getenv("FLASK_DEBUG", "false").lower() == "true",
-    )  
+    )
