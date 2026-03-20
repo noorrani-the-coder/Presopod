@@ -17,4 +17,4 @@ COPY . .
 RUN mkdir -p /app/data/uploads /app/data/output
 
 EXPOSE 5000
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --preload app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --preload backend.app:app"]
