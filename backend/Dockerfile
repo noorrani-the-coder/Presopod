@@ -18,4 +18,4 @@ RUN mkdir -p /app/data/uploads /app/data/output
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app"]
